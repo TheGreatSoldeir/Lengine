@@ -1,0 +1,39 @@
+ROOM
+-str room_id
+-str backgroundimg
+-DIALOGUE[] text
+-ANIMATION[] animation_updates
+-LINK[] nextrooms
+-REPLACEROOM[] replace_room
+-str replace_key
+
+DIALOGUE
+-str text
+-str talker
+
+TALKER
+-str name
+-color color
+
+LINK
+-str text
+-str next_room_id
+
+REPLACEROOM
+-str room_id
+-int weight
+
+ENEMY
+-int health
+-str attack_room
+-str defeated_room
+
+ANIMATION
+-str image
+-int type
+-bool clear
+-int posx, posy
+-float size_x, size_y
+//// ANIMATIONS Concept:
+TYPE: 0=delete,1=appear,2=move
+ARGS: image, posXY, sizeXY

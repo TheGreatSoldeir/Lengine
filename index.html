@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            * {
+                font-family: Arial;
+            }
+            #log_output {
+                overflow-y: scroll;
+                line-height: 1.2em;
+                max-height: 8em;
+                background-color: #ccc;
+                color: blue;
+                font-family: consolas;
+            }
+            .splitdiv {
+                display: flex;
+            }
+            .bl {
+                border-bottom: 1px solid black;
+            }
+            .room_listing {
+                background-color: gold;
+                padding: 0.4em;
+            }
+            .leftright { /* ignore the following 2 comments, they are from ChatGPT */
+                flex: 1;             /* each takes equal space */
+                padding: 10px;
+                box-sizing: border-box; /* includes padding in width */
+                border: 1px solid #ccc;
+            }
+            #output {
+
+            }
+            input {
+                font-style: italic;
+                color: green;
+            }
+            .iL {
+                width: 100%;
+            }
+            ul,ol {
+                padding-left: 1em;
+                margin: 0;
+            }
+            li {
+                padding-top: 0.15em;
+                padding-bottom: 0.75em;
+            }
+            .dialogue {
+                margin-bottom: -0.75em;
+            }
+            #room_view {
+                padding-top: 0;
+            }
+            #room_name {
+                margin-top: 0;
+                display: inline;
+            }
+            .rA {
+                float: right;
+            }
+            #output {
+                height: 100%;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+        </style>
+        <title>EpicGamingEngine Test</title>
+    </head>
+    <body>
+        <div>
+            KONSOLE
+            <div id="log_output" style="overflow:scroll;"><br><br><br><br><br><br><br><br><br><br><br></div>
+            NEW ROOM: <input id="new_room"> NEW IMAGE: <input id="add_image"> NEW TALKER: <input id="addTalker" ondblclick="addTalker()">
+        </div>
+        <div class="splitdiv">
+            <div class="leftright">
+                <div id="room_view">
+                    <h2 id="room_name"></h2>
+                    <span class="rA">
+                        <button onclick="viewRoomRefresh()">↻</button>
+                        <button onclick="view_room(null)">X</button>
+                    </span><br>
+
+                    BACKGROUND IMAGE: <select id="bgSelect" onchange="updateBG()"></select> <br>
+                    DIALOGUE <button onclick="addDialogue()">+</button>
+                    <ul id="dialogue"></ul>
+                    LINKS <select id="linkselect"></select><button onclick="addLink()">+</button><br>
+                    <ul id="links"></ul>
+
+                    ANIMATIONS <button onclick="addAnimation()">+</button>
+                    <ol id="animations"></ol>
+
+
+
+                </div>
+            </div>
+
+            <div id="overview_box" class="leftright">
+                ALL ROOMS:<br>
+                <div id="all_rooms"></div>
+                ALL TALKERS: <br>
+                <div id="all_talkers"></div>
+                ALL IMAGES:<br>
+                <div id="image_list"></div>
+                IMAGE VIEW<br>
+                <img id="imgview" src="">
+            </div>
+        </div>
+        <div>
+            <textarea id="output"></textarea>
+        </div>
+        <button id="outputButton" onclick="outputJSON()">OUTPUT</button>
+        <button id="inputbutton" onclick="importJSON()">IMPORT</button>
+    </body>
+    <script src="base2.js"></script>
+</html>
