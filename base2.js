@@ -100,7 +100,7 @@ class System {
 
 // CODE HERE =================================================================
 
-const sys = new System();
+let sys = new System();
 function log(text) {
     e = document.getElementById("log_output");
     e.innerHTML = text + "<br>" + e.innerHTML;
@@ -379,14 +379,18 @@ function viewRoomRefresh() {
 
 function outputJSON() {
     tArea = document.getElementById("output");
-    tArea.innerHTML = JSON.stringify(sys);
+    tArea.value = JSON.stringify(sys);
 }
 
-function importJSON() { // TODO: fix random linebreaks
+function importJSON() { 
     tArea = document.getElementById("output");
-    json = tArea.innerHTML;
-    json = json.replace(/(\r\n|\n|\r)/gm, "");
-    sys = JSON.parse(json);
+    json = tArea.value;
+    log("IMPORTING: " + json);
+    x = Object.assign(new System(), JSON.parse(json));
+    for (let room in x.rooms) {
+        x.rooms[room] = Object.assign(new Room(room), x.rooms[room]);
+    }
+    sys = x;
     setup();
 }
 
