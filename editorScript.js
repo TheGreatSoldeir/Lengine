@@ -67,6 +67,7 @@ class System {
         this.images = [];
         this.talkers = {};
         this.add_talker("");
+        this.spawn_room = null;
         this.current_room = null;
     }
     add_room(id) {
@@ -113,6 +114,16 @@ function setElementVisibility(element, visible) {
   }
 }
 function generate_overview() {
+    e = document.getElementById("spawnSelect");
+    ih = "";
+    allRooms = Object.keys(sys.rooms);
+    for (let rN in allRooms) {
+        ih += `<option>${allRooms[rN]}</option>`
+    }
+    e.innerHTML = ih;
+    e.value = sys.spawn_room == null ? "" : sys.spawn_room;
+    document.getElementById("linkselect").innerHTML = ih;
+
     e = document.getElementById("all_rooms");
     e.innerHTML = "";
     for(let rid in sys.rooms) {
@@ -153,6 +164,9 @@ function generate_overview() {
 }
 function delete_room(rid) {
     view_room(null);
+    if(sys.spawn_room == rid) {
+        sys.spawn_room = null;
+    }
     sys.remove_room(rid);
     generate_overview();
     log(`Room ${rid} deleted.`)
@@ -175,6 +189,11 @@ function add_images_to_select(element) {
     for(let i = 0; i < sys.images.length; i++) {
         element.innerHTML += `<option>${sys.images[i]}</option>`
     }
+}
+
+function updateSpawnRoom() {
+    v = document.getElementById("spawnSelect").value;
+    sys.spawn_room = v;
 }
 
 function updateBG() {
@@ -385,7 +404,7 @@ function outputJSON() {
     tArea.value = JSON.stringify(sys);
 }
 
-function importJSON() { 
+function importJSON() {
     tArea = document.getElementById("output");
     json = tArea.value;
     log("IMPORTING: " + json);
