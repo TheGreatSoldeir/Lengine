@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EpicGAMING</title>
+    <style>
+        body {
+            margin: 0;
+        }
+        #gamejson {
+            visibility: hidden;
+            height: 0;
+            width: 0;
+            display: block;
+        }
+        #allCanvas {
+            width: 100%;
+            height: 60vh;
+            background-color: #6666;
+            position: relative;
+
+        }
+
+    </style>
+</head>
+<body>
+    <span id="gamejson">
+        {"rooms":{"room1":{"id":"room1","dialogue":[{"text":"heyho minecraft freund","talkerName":"talker1"}],"animations":[{"image":"E.png","type":1,"moveY":50,"moveX":50,"sizeY":1,"sizeX":1}],"links":{"room3":"raum3 joinen","room2":"r2 betreten"},"background":"bgIMG.jpg"},"room2":{"id":"room2","dialogue":[{"text":"Du hast raum3 betreten.","talkerName":""}],"animations":[{"image":"E.png","type":0,"moveY":0,"moveX":0,"sizeY":1,"sizeX":1}],"links":{"room3":"r3 betreten"},"background":"E.png"},"room3":{"id":"room3","dialogue":[{"text":"hi","talkerName":""}],"animations":[],"links":{"room1":"..."},"background":"bgIMG.jpg"}},"images":["E.png","bgIMG.jpg"],"talkers":{"":{"name":"","color":"#ffffff"},"talker1":{"name":"talker1","color":"#ff0006"}},"current_room":{"id":"room3","dialogue":[{"text":"hi","talkerName":""}],"animations":[],"links":{"room1":"..."},"background":"bgIMG.jpg"}}
+    </span>
+    <div id="allCanvas"></div>
+</body>
+
+<script src="playScript.js"></script>
+</html>
