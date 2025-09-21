@@ -1,0 +1,40 @@
+DIALOGUE
+text str
+talkerName str
+
+TALKER
+name str
+color str
+
+ANIMATION
+image str
+type int
+moveX moveY int
+sizeX sizeY int
+
+ROOM
+id str
+dialogue list
+animations list
+links map
+background str
+
+SYSTEM
+rooms map
+images list
+talkers map
+spawn_room str
+current_room str
+
+/////////////////////////////////////////
+//// RANDOM NOTIZEN
+//// ANIMATIONS Concept:
+TYPE: 0=delete,1=appear,2=move
+ARGS: image, posXY, sizeXY
+
+//// TODO LISTE
+- animations fertig machen (seperate pos/size, add rotation)
+- bossfights (roomeffects, playerHP, boss)
+- roomreplace (keys)
+- music
+- images: res folder as default

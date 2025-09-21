@@ -131,7 +131,7 @@ function generate_overview() {
             <div class="room_listing">
                 ${rid}
                 <button onclick="view_room('${rid}')">EDIT</button>
-                <button onclick="delete_room('${rid}')">DELETE</button>
+                <button ondblclick="delete_room('${rid}')">DELETE</button>
             </div>
         `
     }
@@ -360,7 +360,7 @@ function liLink(roomName) {
     text = sys.current_room.links[roomName];
     r = `<li>
     ${roomName}
-    <input id="linkT${roomName}" value=${text} onchange="updateLink('${roomName}')">
+    <input id="linkT${roomName}" value="${text}" onchange="updateLink('${roomName}')">
     <button onclick="removeLink('${roomName}')">-</button>
     </li>`
     return r;
@@ -401,7 +401,9 @@ function viewRoomRefresh() {
 
 function outputJSON() {
     tArea = document.getElementById("output");
-    tArea.value = JSON.stringify(sys);
+    const clonedSys = Object.assign({}, sys);
+    delete clonedSys["current_room"];
+    tArea.value = JSON.stringify(clonedSys);
 }
 
 function importJSON() {
