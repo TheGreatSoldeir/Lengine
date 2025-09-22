@@ -18,6 +18,7 @@ dialogue list
 animations list
 links map
 background str
+itemDrop, replaceItem, replaceRoom str
 
 SYSTEM
 rooms map

@@ -7,10 +7,22 @@ class System {
 }
 let s;
 
+function r(id) { // function to return room object by room id
+    return s.rooms[id];
+}
+
+class Player {
+    constructor() {
+        this.hp = 100;
+        this.items = [];
+    }
+}
+
 class GameState {
     constructor() {
-        this.currentRoom = s.rooms[s.spawn_room];
+        this.currentRoom = r(s.spawn_room);
         this.dialogueStage = 0;
+        this.player = new Player();
     }
     getCurrentDialogue() {
         return this.currentRoom.dialogue[this.dialogueStage];
@@ -91,7 +103,31 @@ class GameState {
 
         }
     }
+
+    checkToReplace() {
+        if(this.currentRoom.replaceItem == "")
+            return null;
+        if(this.player.items.includes(this.currentRoom.replaceItem))
+            return r(this.currentRoom.replaceRoom);
+    }
+
+    dropItems() {
+        let i = this.currentRoom.itemDrop;
+        if(i == "" || this.player.items.includes(i))
+            return;
+        this.player.items.push(i);
+
+    }
+
     displayCurrentRoom() {
+        let check = this.checkToReplace();
+        if(check != null) {
+            this.currentRoom = check;
+            this.displayCurrentRoom();
+            return;
+        }
+        this.dropItems();
+
         this.displayCurrentDialogue();
         this.displayCurrentLinks();
         this.displayCurrentImages();
@@ -100,7 +136,7 @@ class GameState {
 let gs;
 
 function enterRoom(roomName) {
-    gs.currentRoom = s.rooms[roomName];
+    gs.currentRoom = r(roomName);
     gs.displayCurrentRoom();
 }
 

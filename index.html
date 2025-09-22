@@ -36,6 +36,10 @@
                 font-style: italic;
                 color: green;
             }
+            input:placeholder-shown {
+                background-color: lightgrey;
+                color: red;
+            }
             .iL {
                 width: 100%;
             }
@@ -83,13 +87,14 @@
                         <button onclick="viewRoomRefresh()">↻</button>
                         <button onclick="view_room(null)">X</button>
                     </span><br>
-
-                    BACKGROUND IMAGE: <select id="bgSelect" onchange="updateBG()"></select> <br>
                     DIALOGUE <button onclick="addDialogue()">+</button>
                     <ul id="dialogue"></ul>
                     LINKS <select id="linkselect"></select><button onclick="addLink()">+</button><br>
                     <ul id="links"></ul>
+                    DROP ITEM: <input id="itemDrop" onchange="updateItemDrop()" placeholder="-"><br>
+                    REPLACE ROOM WITH <select id="replaceRoomSelect" onchange="updateReplaceRoom()"></select> IF ITEM <input id="replaceItem" placeholder="don't replace" onchange="updateReplaceRoom()"><br>
 
+                    BACKGROUND IMAGE: <select id="bgSelect" onchange="updateBG()"></select> <br>
                     ANIMATIONS <button onclick="addAnimation()">+</button>
                     <ol id="animations"></ol>
 

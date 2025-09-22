@@ -28,6 +28,9 @@ class Room {
         this.animations = [];
         this.links = {};
         this.background = "";
+        this.itemDrop = "";
+        this.replaceItem = "";
+        this.replaceRoom = "";
     }
     set_background(filename) {
         if (filename != null && filename != "") {
@@ -122,7 +125,6 @@ function generate_overview() {
     }
     e.innerHTML = ih;
     e.value = sys.spawn_room == null ? "" : sys.spawn_room;
-    document.getElementById("linkselect").innerHTML = ih;
 
     e = document.getElementById("all_rooms");
     e.innerHTML = "";
@@ -375,6 +377,14 @@ function viewLinks() {
     setupLinkSelect();
 }
 
+function updateItemDrop() {
+    sys.current_room.itemDrop = document.getElementById("itemDrop").value;
+}
+
+function updateReplaceRoom() {
+    sys.current_room.replaceItem = document.getElementById("replaceItem").value;
+    sys.current_room.replaceRoom = document.getElementById("replaceRoomSelect").value;
+}
 
 function updateTColor(name) {
     log(`Color of ${name} changed.`);
@@ -432,10 +442,27 @@ function view_room(room_id) {
     // title
     document.getElementById("room_name").innerHTML = room_id;
 
+    // replace if item setup
+    ih = "";
+    allRooms = Object.keys(sys.rooms);
+    allRooms.splice(allRooms.indexOf(room_id), 1); // remove room itself
+    for (let rN in allRooms) {
+        ih += `<option>${allRooms[rN]}</option>`
+    }
+    rrs = document.getElementById("replaceRoomSelect");
+    rrs.innerHTML = ih;
+    rrs.value = r.replaceRoom;
+    document.getElementById("replaceItem").value = r.replaceItem;
+
+
     // background image setup
     bImage = document.getElementById("bgSelect");
     add_images_to_select(bImage);
     bImage.value = r.background
+
+    // itemdrop setup
+    itemDrop = document.getElementById("itemDrop");
+    itemDrop.value = r.itemDrop;
 
     // animations setup
     viewAnimations();
