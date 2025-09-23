@@ -31,6 +31,9 @@ class Room {
         this.itemDrop = "";
         this.replaceItem = "";
         this.replaceRoom = "";
+        this.startFight = "";
+        this.hpPlayer = 0;
+        this.hpBoss = 0;
     }
     set_background(filename) {
         if (filename != null && filename != "") {
@@ -64,14 +67,31 @@ class Room {
     }
 }
 
+class FightEntity {
+    constructor(name) {
+        this.name = name;
+        this.hp = 100;
+        this.attacks = [];
+        this.endRoom = "";
+    }
+    addAttack(r) {
+        this.attacks.push(r);
+    }
+    removeAttack(r) {
+        this.attacks.splice(this.attacks.indexOf(r), 1);
+    }
+}
+
 class System {
     constructor() {
         this.rooms = {};
         this.images = [];
         this.talkers = {};
+        this.fights = {};
         this.add_talker("");
         this.spawn_room = null;
         this.current_room = null;
+        this.current_fight = null;
     }
     add_room(id) {
         this.rooms[id] = new Room(id);
@@ -84,6 +104,12 @@ class System {
     }
     contains_roomid(id) {
         return id in this.rooms;
+    }
+    add_fight(name) {
+        this.fights[name] = new FightEntity(name);
+    }
+    remove_fight(name) {
+        delete this.fights[name];
     }
     add_image(name) {
         this.images.push(name);
@@ -163,6 +189,20 @@ function generate_overview() {
         <button onclick="deleteTalker('${n}')">DELETE</button>
         </div>`
     }
+
+    e = document.getElementById("fight_entities");
+    e.innerHTML = "";
+    for(let fight in sys.fights) {
+        e.innerHTML += `
+        <div>
+        ${fight}
+        <button onclick="viewFightEntity('${fight}')"> VIEW</button>
+        <button onclick="deleteFightEntity('${fight}')"> DELETE </button>
+
+        </div>
+        `
+    }
+
 }
 function delete_room(rid) {
     view_room(null);
@@ -223,9 +263,9 @@ function liAnimation(i) {
     r = `
     <li id="animation${i}">
     type: <select id="animation${i}t" onchange="animationUpdate(${i}, 't')">
-    <option value=0>delete</option>
-    <option value=1>appear</option>
-    <option value=2>move</option>
+    <option value=0>sustain/appear</option>
+    <option value=1>move</option>
+    <option value=2>delete</option>
     </select> <br>
     image: <select id="animation${i}i" onchange="animationUpdate(${i}, 'i')">
     </select> <br>
@@ -258,9 +298,9 @@ function viewAnimations() {
         list.innerHTML += liAnimation(i);
     }
     t = {
-        0: "delete",
-        1: "appear",
-        2: "move"
+        0: "sustain/appear",
+        1: "move",
+        2: "delete"
     }
     for(let i = 0; i < animationsCopy.length; i++) {
         iE = list.querySelector(`#animation${i}i`);
@@ -275,6 +315,8 @@ function addAnimation() {
     sys.current_room.add_animation();
     viewAnimations();
 }
+
+
 
 function addDialogue() {
     sys.current_room.add_dialogue();
@@ -424,14 +466,112 @@ function importJSON() {
     for (let room in x.rooms) {
         x.rooms[room] = Object.assign(new Room(room), x.rooms[room]);
     }
+    for(let fight in x.fights) {
+        x.fights[fight] = Object.assign(new FightEntity(fight), x.fights[fight]);
+    }
     sys = x;
     setup();
+}
+function copyOutputJSON() {
+    tArea = document.getElementById("output");
+    navigator.clipboard.writeText(tArea.value);
+}
+
+function updateRoomFight() {
+    r = sys.current_room;
+    player = parseInt(document.getElementById("hpPlayer").value);
+    boss = parseInt(document.getElementById("hpBoss").value);
+    r.hpPlayer = player;
+    r.hpBoss = boss;
+
+    fight = document.getElementById("sFightSelect").value;
+    r.startFight = fight;
+
+}
+
+function addFightEntity() {
+    let eNF = document.getElementById("addFightEntity");
+    let nfn = eNF.value;
+    eNF.value = "";
+    if(nfn in sys.fights) {
+        log(`FightEntity ${nfn} already exists.`);
+        return;
+    }
+    sys.add_fight(nfn);
+    log(`FightEntity ${nfn} successfully added.`);
+    generate_overview();
+}
+function deleteFightEntity(name) {
+    viewFightEntity(null);
+    sys.remove_fight(name);
+    generate_overview();
+}
+
+function fightRemoveAttack(name) {
+    sys.current_fight.removeAttack(name);
+    viewFightRefresh();
+}
+
+function fightAddAttack() {
+    e = document.getElementById("fightAttackSel");
+    if (e.value != "") {
+        sys.current_fight.addAttack(e.value);
+    }
+    viewFightRefresh();
+}
+
+function updateFight() {
+    sys.current_fight.hp = parseInt(document.getElementById("bossHP").value);
+    sys.current_fight.endRoom = document.getElementById("fightEndRoom").value;
+}
+
+function viewFightEntity(name) {
+    eView = document.getElementById("fightView");
+    if(name == null) {
+        sys.current_fight = null;
+        setElementVisibility(eView, false);
+        return;
+    }
+    f = sys.fights[name];
+    sys.current_fight = f;
+    setElementVisibility(eView, true);
+
+    // title
+    document.getElementById("fightName").innerHTML = name;
+    document.getElementById("bossHP").value = f.hp.toString();
+    // select new attack
+    let eAttacks = document.getElementById("fightAttackSel");
+    let eEndRoom = document.getElementById("fightEndRoom");
+    ih = ``;
+    let ih2 = ``
+    for(let r in sys.rooms) {
+        if(f.attacks.indexOf(r) < 0) { // check if already has attack
+            ih += `<option>${r}</option>`;
+        }
+        ih2 += `<option>${r}</option>`;
+    }
+    eAttacks.innerHTML = ih;
+    eEndRoom.innerHTML = ih2;
+    eEndRoom.value = f.endRoom;
+    // generate LI for all attacks
+    eAttacks = document.getElementById("fightAttacks");
+    ih = ``;
+    for(let r in f.attacks) {
+        r = f.attacks[r];
+        ih += `<li>${r} <button onclick="fightRemoveAttack('${r}')">-</button></li>`
+    }
+    eAttacks.innerHTML = ih;
+}
+
+function viewFightRefresh() {
+    viewFightEntity(sys.current_fight.name);
 }
 
 function view_room(room_id) {
     // if disable room view
     d = document.getElementById("room_view");
     if(room_id == null) {
+        sys.current_room = null;
         setElementVisibility(d, false);
         return;
     } // else:
@@ -464,14 +604,27 @@ function view_room(room_id) {
     itemDrop = document.getElementById("itemDrop");
     itemDrop.value = r.itemDrop;
 
+    // damage and fightselect setup
+
+    fightSelect = document.getElementById("sFightSelect");
+    fightSelect.innerHTML = "";
+    ih = `<option></option>`;
+    for(fight in sys.fights) {
+        ih += `<option>${fight}</option>`;
+    }
+    fightSelect.innerHTML = ih;
+    fightSelect.value = r.startFight;
+    document.getElementById("hpPlayer").value = r.hpPlayer.toString();
+    document.getElementById("hpBoss").value = r.hpBoss.toString();
     // animations setup
     viewAnimations();
     viewDialogue();
     viewLinks();
 }
 function setup() {
-    // view null room
+    // view null
     view_room(null);
+    viewFightEntity(null);
     // gen first overview
     generate_overview();
     // new room input
@@ -491,7 +644,7 @@ function setup() {
     // new image input
     newimage_input = document.getElementById("add_image");
     newimage_input.ondblclick = function() {
-        img = newimage_input.value;
+        img = "i/" + newimage_input.value;
         if(sys.has_image(img)) {
             log(`Image ${img} already exists.`);
         } else {

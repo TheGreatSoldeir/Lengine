@@ -4,13 +4,16 @@
         <style>
             * {
                 font-family: Arial;
+                background-color: rgb(30, 40, 94);
+                color: white;
+                border-color: black;
             }
             #log_output {
                 overflow-y: scroll;
                 line-height: 1.2em;
                 max-height: 8em;
-                background-color: #ccc;
-                color: blue;
+                background-color: black;
+                color: greenyellow;
                 font-family: consolas;
             }
             .splitdiv {
@@ -20,21 +23,19 @@
                 border-bottom: 1px solid black;
             }
             .room_listing {
-                background-color: gold;
+                background-color: violet;
                 padding: 0.4em;
             }
             .leftright { /* ignore the following 2 comments, they are from ChatGPT */
                 flex: 1;             /* each takes equal space */
                 padding: 10px;
                 box-sizing: border-box; /* includes padding in width */
-                border: 1px solid #ccc;
-            }
-            #output {
-
+                border: 1px dotted black;
             }
             input {
                 font-style: italic;
                 color: green;
+                background-color: lightgrey;
             }
             input:placeholder-shown {
                 background-color: lightgrey;
@@ -57,9 +58,12 @@
             #room_view {
                 padding-top: 0;
             }
-            #room_name {
+            #room_name, #fightName {
                 margin-top: 0;
                 display: inline;
+            }
+            #fightName {
+                color: red;
             }
             .rA {
                 float: right;
@@ -68,6 +72,21 @@
                 height: 100%;
                 width: 100%;
                 box-sizing: border-box;
+                font-size: smaller;
+            }
+            hr {
+                border: none;                /* remove default */
+                border-top: dashed lightgrey; /* thickness, style, and color */
+                color: grey;                 /* fallback */
+                background: none;            /* no background */
+            }
+            button {
+                background-color: yellow;
+                color: black;
+            }
+            select {
+                background-color: blue;
+                color: white;
             }
 
         </style>
@@ -77,7 +96,10 @@
         <div>
             KONSOLE
             <div id="log_output" style="overflow:scroll;"><br><br><br><br><br><br><br><br><br><br><br></div>
-            NEW ROOM: <input id="new_room"> NEW IMAGE: <input id="add_image"> NEW TALKER: <input id="addTalker" ondblclick="addTalker()">
+            NEW ROOM: <input id="new_room">
+            NEW IMAGE: <input id="add_image">
+            NEW TALKER: <input id="addTalker" ondblclick="addTalker()">
+            NEW FIGHTENTITY: <input id="addFightEntity" ondblclick="addFightEntity()">
         </div>
         <div class="splitdiv">
             <div class="leftright">
@@ -87,19 +109,38 @@
                         <button onclick="viewRoomRefresh()">↻</button>
                         <button onclick="view_room(null)">X</button>
                     </span><br>
+                    <hr>
                     DIALOGUE <button onclick="addDialogue()">+</button>
                     <ul id="dialogue"></ul>
                     LINKS <select id="linkselect"></select><button onclick="addLink()">+</button><br>
                     <ul id="links"></ul>
-                    DROP ITEM: <input id="itemDrop" onchange="updateItemDrop()" placeholder="-"><br>
-                    REPLACE ROOM WITH <select id="replaceRoomSelect" onchange="updateReplaceRoom()"></select> IF ITEM <input id="replaceItem" placeholder="don't replace" onchange="updateReplaceRoom()"><br>
-
+                    <hr>
                     BACKGROUND IMAGE: <select id="bgSelect" onchange="updateBG()"></select> <br>
                     ANIMATIONS <button onclick="addAnimation()">+</button>
                     <ol id="animations"></ol>
+                    <hr>
+                    START FIGHT: <select id="sFightSelect" onchange="updateRoomFight()"></select><br>
+                    HP CHANGE -
+                    player: <input type="number" id="hpPlayer" onchange="updateRoomFight()">
+                    boss: <input type="number" id="hpBoss" onchange="updateRoomFight()">
+                    <br><hr>
+                    DROP ITEM: <input id="itemDrop" onchange="updateItemDrop()" placeholder="-"><br>
+                    REPLACE ROOM WITH <select id="replaceRoomSelect" onchange="updateReplaceRoom()"></select> IF ITEM <input id="replaceItem" placeholder="don't replace" onchange="updateReplaceRoom()"><br>
 
 
-
+                </div>
+                <div id="fightView">
+                    <hr>
+                    <h2 id="fightName"></h2>
+                    <span class="rA">
+                        <button onclick="viewFightRefresh()">↻</button>
+                        <button onclick="viewFightEntity(null)">X</button>
+                    </span><br>
+                    HP: <input type="number" id="bossHP" onchange="updateFight()">
+                    END ROOM: <select id="fightEndRoom" onchange="updateFight()"> </select>
+                    <br>
+                    ADD ATTACK: <select id="fightAttackSel"></select> <button onclick="fightAddAttack()">+</button>
+                    <ul id="fightAttacks"></ul>
                 </div>
             </div>
 
@@ -107,6 +148,8 @@
                 SPAWN ROOM: <select id="spawnSelect" onchange="updateSpawnRoom()"></select><br>
                 ALL ROOMS:<br>
                 <div id="all_rooms"></div>
+                ALL FIGHT ENTITIES:<br>
+                <div id="fight_entities"></div>
                 ALL TALKERS: <br>
                 <div id="all_talkers"></div>
                 ALL IMAGES:<br>
@@ -115,11 +158,15 @@
                 <img id="imgview" src="">
             </div>
         </div>
+        <br>
         <div>
             <textarea id="output"></textarea>
         </div>
         <button id="outputButton" onclick="outputJSON()">OUTPUT</button>
         <button id="inputbutton" onclick="importJSON()">IMPORT</button>
+        <br>
+        <button onclick="copyOutputJSON()">COPY</button>
+        <button onclick="document.getElementById('output').select()">SELECT</button>
     </body>
     <script src="editorScript.js"></script>
 </html>

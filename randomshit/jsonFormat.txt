@@ -19,18 +19,27 @@ animations list
 links map
 background str
 itemDrop, replaceItem, replaceRoom str
+hpPlayer, hpBoss int
+
+FIGHTENTITY
+name str
+hp int
+attacks list<str>
+endRoom str
+
 
 SYSTEM
 rooms map
 images list
 talkers map
 spawn_room str
-current_room str
+current_room, current_fight obj
+fights map<str, fightentity>
 
 /////////////////////////////////////////
 //// RANDOM NOTIZEN
 //// ANIMATIONS Concept:
-TYPE: 0=delete,1=appear,2=move
+TYPE: 0=appear, 1=move, 2=delete
 ARGS: image, posXY, sizeXY
 
 //// TODO LISTE

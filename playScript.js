@@ -10,11 +10,26 @@ let s;
 function r(id) { // function to return room object by room id
     return s.rooms[id];
 }
+// func ripped from editorscript
+function setElementVisibility(element, visible) {
+  if (visible) {
+    element.style.display = "";
+  } else {
+    element.style.display = "none";
+  }
+}
+
 
 class Player {
     constructor() {
         this.hp = 100;
         this.items = [];
+    }
+}
+class Enemy {
+    constructor(entityName) {
+        this.fightEntity = s.fights[entityName]
+        this.hp = fightEntity[hp];
     }
 }
 
@@ -23,6 +38,7 @@ class GameState {
         this.currentRoom = r(s.spawn_room);
         this.dialogueStage = 0;
         this.player = new Player();
+        this.enemy = null;
     }
     getCurrentDialogue() {
         return this.currentRoom.dialogue[this.dialogueStage];
@@ -54,6 +70,8 @@ class GameState {
 
 
         const anims = this.currentRoom.animations;
+        let activeImages = [];
+
         for(let animation in anims) {
             animation = anims[animation];
             const i = animation.image;
@@ -63,12 +81,14 @@ class GameState {
             const sizeX = animation.sizeX / 100;
             const sizeY = animation.sizeY / 100;
 
+            activeImages.push(i);
+
             let eImg = document.querySelector(`img[src='${i}']`); // find image by src
 
 
-            if(t == 1) { // create new image
+            if(t == 0) { // enforce image presence
                 if(eImg) {
-                    eImg.remove(); // remove if alreay exists.
+                    continue; // ignore if alr exists
                 }
 
                 eImg = document.createElement("img");
@@ -76,8 +96,8 @@ class GameState {
                 eImg.className = "anim";
 
                 // Map posX/Y from -10..10 to 0%..100%
-                eImg.style.left = ((posX + 10) / 20 * 100) + "%";
-                eImg.style.top  = ((posY + 10) / 20 * 100) + "%";
+                eImg.style.left = "50%";
+                eImg.style.top  = "50%";
 
                 // Set size
                 eImg.style.transform = `translate(-50%, -50%) scale(${sizeX}, ${sizeY})`;
@@ -85,23 +105,38 @@ class GameState {
                 continue;
             }
 
-            if(!eImg) { // if not found
-                continue;
-            }
 
-            if(t == 0) { // delete existing image.
+
+            if(t == 2 && eImg) { // delete existing image.
                 eImg.remove();
                 continue;
             }
 
-            if(t == 2) { // animate existing image
+            if(t == 1) { // animate existing image
+                if(!eImg) { // if not found, create new
+                    eImg = document.createElement("img");
+                    eImg.src = i;
+                    eImg.className = "anim";
+                }
                 let tX = ((posX + 10) / 20 * 100) + "%";
                 let tY  = ((posY + 10) / 20 * 100) + "%";
 
                 eImg.style.transform = `translate(${tX}, ${tY}) scale(${sizeX}, ${sizeY})`;
             }
-
         }
+        // remove inactive images
+        for(let image in s.images) {
+            image = s.images[image];
+            if(activeImages.indexOf(image) >=0) { // if image is active
+                continue;
+            }
+            let eImg = document.querySelector(`img[src='${image}']`); // find inactive img
+            if(eImg) {
+                eImg.remove();
+            }
+        }
+
+
     }
 
     checkToReplace() {
@@ -109,6 +144,18 @@ class GameState {
             return null;
         if(this.player.items.includes(this.currentRoom.replaceItem))
             return r(this.currentRoom.replaceRoom);
+
+        if(this.enemy != null) { // boss death
+            if (this.enemy.hp < 1) {
+                this.enemy = null;
+                return r(this.enemy.fightEntity.endRoom);
+            }
+        }
+        if(this.currentRoom.id == "ENEMY") {
+            let attackCount = this.enemy.fightEntity.attacks.length;
+            let i = Math.floor(Math.random() * attackCount); // random int
+            return r(r[i]);
+        }
     }
 
     dropItems() {
@@ -119,6 +166,37 @@ class GameState {
 
     }
 
+    roomFightEffects() {
+        let bbDIV = document.getElementById("bHPDiv");
+        if(this.enemy != null) { // boss hp
+            let hp = Math.max(0, this.enemy.hp + this.currentRoom.hpBoss);
+            hp = Math.min(this.enemy.fightEntity.hp, hp);
+            this.enemy.hp = hp;
+            // display
+            setElementVisibility(bbDIV, true);
+            document.getElementById("bossHP").value = hp;
+        } else {
+            setElementVisibility(bbDIV, false);
+        }
+        // player hp
+        let hp = this.currentRoom.hpPlayer + this.player.hp;
+        hp = Math.max(0, hp);
+        hp = Math.min(100, hp);
+        this.player.hp = hp;
+
+        // display
+        document.getElementById("playerHP").value = hp;
+
+    }
+
+    playerDeath() {
+        let e = document.getElementById("ctrl");
+        setElementVisibility(e, false);
+        e = document.getElementById("deathscreen");
+        console.log(e);
+        setElementVisibility(e, true);
+    }
+
     displayCurrentRoom() {
         let check = this.checkToReplace();
         if(check != null) {
@@ -126,8 +204,14 @@ class GameState {
             this.displayCurrentRoom();
             return;
         }
-        this.dropItems();
+        if(this.player.hp < 1) { // player death / game over
+            this.playerDeath();
+            return;
+        }
 
+        this.roomFightEffects();
+        this.dropItems();
+        // display shit
         this.displayCurrentDialogue();
         this.displayCurrentLinks();
         this.displayCurrentImages();
@@ -144,6 +228,8 @@ function setup() {
     s = new System();
     gs = new GameState();
     gs.displayCurrentRoom();
+    document.getElementById("deathscreen").style.display = "none";
+
 }
 
 setup();
