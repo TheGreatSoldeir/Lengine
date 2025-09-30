@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>EpicGAMING</title>
+    <!-- You might wanna change the title & icon. This aint in the editor yet -->
+    <title>Lengine Game </title>
+    <link rel="icon" type="image/x-icon" href="i/YOURIMAGE.jpg">
+    <meta charset="UTF-8">
     <style>
         * {
             color: white;
             text-align: center;
             margin: 1vh;
-            font-family: comic sans-serif
+            font-family: 'Times New Roman', Times, serif;
         }
         div, html, body, #gamejson {
             margin: 0;
@@ -32,8 +35,15 @@
             width: 100%;
             margin: 0.2rem 0 0 0;
         }
+        .save {
+            font-family: consolas;
+            background-color: black;
+            color:yellow;
+            font-size: 1rem;
+            margin: 0.2rem 0 0 0;
+        }
         #roomText {
-            color: white;
+            color: gold;
         }
         #gamejson {
             visibility: hidden;
@@ -45,7 +55,6 @@
             margin: 0;
             width: 100%;
             height: 70vh;
-            background-color: #666;
             background-size: 100% 100%;
             background-repeat: no-repeat;
             background-position: center;
@@ -83,10 +92,8 @@
 </head>
 <body>
     <span id="gamejson">
-
-
-
-</span>
+        <!-- PASTE YOUR GAME JSON HERE -->
+    </span>
     <div id="topDiv"></div>
     <div id="allCanvas"></div>
     <h1 id="deathscreen">DU BIST GESTORBEN.</h1>
@@ -94,20 +101,26 @@
         <div id="HPbars">
             <div id="pHPDiv">
                 Deine HP: <br>
-                <progress id="playerHP" value=50 max=100></progress>
+                <progress id="playerHP" value=1 max=100></progress>
             </div>
 
 
             <div id="bHPDiv">
                 BOSS HP:<br>
-                <progress id="bossHP" value=50 max=100></progress>
+                <progress id="bossHP" value=1 max=150></progress>
             </div>
         </div>
         <div id="roomDialogue">
             <h1 id="talkerName"></h1>
             <span id="roomText"></span>
         </div>
+        <button id="dialogueButton" class="linkButton" onclick="gs.displayCurrentDialogue()">. . .</button>
+
         <div id="links"></div>
+
+        <button class="save" onclick="copySave()">SAVE (copy)</button>
+        <button class="save" ondblclick="importSave()">LOAD (double click)</button>
+
     </div>
 </body>
 

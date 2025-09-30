@@ -4,9 +4,12 @@
         <style>
             * {
                 font-family: Arial;
-                background-color: rgb(30, 40, 94);
                 color: white;
                 border-color: black;
+            }
+            body {
+                
+                background-color: rgb(30, 40, 94);
             }
             #log_output {
                 overflow-y: scroll;
@@ -24,13 +27,27 @@
             }
             .room_listing {
                 background-color: violet;
-                padding: 0.4em;
+                display: inline-block;
+                padding: 0.1em;
+                margin-bottom: 0.3em;
+                margin-right: 0.2em;
+            }
+            rb:hover {
+                color:gold;
+                cursor: pointer;
+                
             }
             .leftright { /* ignore the following 2 comments, they are from ChatGPT */
                 flex: 1;             /* each takes equal space */
                 padding: 10px;
                 box-sizing: border-box; /* includes padding in width */
                 border: 1px dotted black;
+            }
+			.gold {
+				color: gold;
+			}
+            #links {
+                background-color: rgba(0, 0, 0, 0.4);
             }
             input {
                 font-style: italic;
@@ -88,11 +105,18 @@
                 background-color: blue;
                 color: white;
             }
+            select[value=""] {
+                background-color: red;
+            }
+            input[type="color"] {
+                height: 50%;
+            }
 
         </style>
         <title>EpicGamingEngine Test</title>
     </head>
     <body>
+        <center style="font-size: 1.2vh;"> Lengine v0.7</center>
         <div>
             KONSOLE
             <div id="log_output" style="overflow:scroll;"><br><br><br><br><br><br><br><br><br><br><br></div>
@@ -112,7 +136,8 @@
                     <hr>
                     DIALOGUE <button onclick="addDialogue()">+</button>
                     <ul id="dialogue"></ul>
-                    LINKS <select id="linkselect"></select><button onclick="addLink()">+</button><br>
+                    <span class="gold">LINKS</span>
+					<select id="linkselect"></select><button onclick="addLink()">+</button><br>
                     <ul id="links"></ul>
                     <hr>
                     BACKGROUND IMAGE: <select id="bgSelect" onchange="updateBG()"></select> <br>
@@ -147,13 +172,13 @@
             <div id="overview_box" class="leftright">
                 SPAWN ROOM: <select id="spawnSelect" onchange="updateSpawnRoom()"></select><br>
                 ALL ROOMS:<br>
-                <div id="all_rooms"></div>
+                <div id="all_rooms"></div><hr>
                 ALL FIGHT ENTITIES:<br>
-                <div id="fight_entities"></div>
+                <div id="fight_entities"></div><hr>
                 ALL TALKERS: <br>
-                <div id="all_talkers"></div>
+                <div id="all_talkers"></div><hr>
                 ALL IMAGES:<br>
-                <div id="image_list"></div>
+                <div id="image_list"></div><hr>
                 IMAGE VIEW<br>
                 <img id="imgview" src="">
             </div>

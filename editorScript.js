@@ -3,7 +3,7 @@ class Animation {
         this.image = "";
         this.type = 0;
         this.moveX = this.moveY = 0;
-        this.sizeX = this.sizeY = 1;
+        this.sizeX = this.sizeY = 100;
     }
 }
 
@@ -156,11 +156,10 @@ function generate_overview() {
     e.innerHTML = "";
     for(let rid in sys.rooms) {
         e.innerHTML += `
-            <div class="room_listing">
-                ${rid}
-                <button onclick="view_room('${rid}')">EDIT</button>
-                <button ondblclick="delete_room('${rid}')">DELETE</button>
-            </div>
+            <span class="room_listing">
+                <rb style="background-color: unset;" onclick="view_room('${rid}')"> ${rid} </rb>
+                <button ondblclick="delete_room('${rid}')">X</button>
+            </span>
         `
     }
     e = document.getElementById("image_list");
