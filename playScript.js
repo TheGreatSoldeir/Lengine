@@ -1,4 +1,3 @@
-
 class System {
     constructor() {
         const j = document.getElementById("gamejson").innerHTML;
@@ -29,7 +28,7 @@ class Player {
 }
 class Enemy {
     constructor(entityName) {
-        this.fightEntity = s.fights[entityName]
+        this.fightEntity = s.fights[entityName];
         this.hp = this.fightEntity.hp;
     }
 }
@@ -45,11 +44,11 @@ class GameState {
         return this.currentRoom.dialogue[this.dialogueStage];
     }
     displayCurrentDialogue() {
-        const d = this.getCurrentDialogue()
+        const d = this.getCurrentDialogue();
         const eText = document.getElementById("roomText");
         eText.innerHTML = d["text"];
         const eTalker = document.getElementById("talkerName");
-        talkerName = d["talkerName"];
+        let talkerName = d.talkerName;
         eTalker.innerHTML = talkerName;
         eTalker.style.color = s.talkers[talkerName].color;
 
@@ -74,14 +73,14 @@ class GameState {
         for(let rName in links) {
                 ih += `<button class="linkButton" onclick="enterRoom('${rName}')">
             ${links[rName]}
-            </button>`
+            </button>`;
         }
         eLinks.innerHTML = ih;
     }
     displayCurrentImages() {
         const bg = this.currentRoom.background;
         const eCanvas = document.getElementById("allCanvas");
-        eCanvas.style.backgroundImage = `url(${bg})`
+        eCanvas.style.backgroundImage = `url(${bg})`;
 
 
         const anims = this.currentRoom.animations;
@@ -257,7 +256,7 @@ function copySave() {
 }
 async function importSave() {
     let x = await navigator.clipboard.readText();
-    gs2 = JSON.parse(x);
+    let gs2 = JSON.parse(x);
     gs = Object.assign(new GameState(), gs2);
     gs.displayCurrentRoom();
 }
